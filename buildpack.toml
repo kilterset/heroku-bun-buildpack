@@ -1,0 +1,13 @@
+api = "0.10"
+
+[buildpack]
+  id = "kilterset/bun"
+  version = "1.0.0"
+  name = "bun"
+
+[[stacks]]
+  id = "*"
+
+[[targets]]
+  os = "linux"
+  arch = "arm64"
