@@ -4,6 +4,14 @@ A cloud native buildpack to run bun on Heroku Fir.
 
 ## How to use
 
+Add the buildpack to your `project.toml`
+
+```
+[[io.buildpacks.group]]
+  id = "kilterset/bun"
+  uri = "https://github.com/kilterset/heroku-bun-buildpack/releases/download/v0.0.1/buildpack-bun.cnb"
+```
+
 In order for your app to start correctly you will need to define either a start
 script in `package.json` or a `Procfile` with a web process
 e.g. (`web: bun src/app.js`).
@@ -39,3 +47,16 @@ There are two options for pinning a specific version to install;
     ```
     pack build --builder heroku/builder:24 --env BUN_VERSION=1.2.2 my-app
     ```
+
+# Packaging this buildpack for release
+
+Run the following to package the buildpack
+```
+pack buildpack package buildpack-bun --format file
+```
+
+Once packaged tag and create a release in GitHub, be sure to include the
+packaged buildpack (`buildpack-bun.cnb`) in the release.
+
+Finally, update the readme to reference the url of the latest version to be used
+in the `project.toml`.
