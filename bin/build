@@ -13,35 +13,44 @@ function run() {
   echo "Kilterset/Bun Buildpack"
   echo
 
-  echo  "---> Installing Bun"
-  install_bun
-
-  echo "---> Installing dependencies"
+  install
   install_dependencies
-
-  echo "---> Writing metadata"
   write_metadata
 
   exit 0
 }
 
-function install_bun() {
-  if [ -f "${build_dir}/bin/bun" ]; then
-    echo "Using cached Bun install"
+function install() {
+  echo  "---> Installing Bun"
+
+  export BUN_INSTALL="${build_dir}"
+
+  installed_version="$(get_installed_version)"
+  target_version="$(get_target_version)"
+
+  if [[ -f "${bun_bin}" && -z "${target_version}" || "${installed_version}" == "${target_version}" ]]; then
+    if [ "${installed_version}" == "${target_version}" ]; then
+      echo "Using cached Bun install"
+    else
+      check_for_updated_version
+    fi
   else
-    export BUN_INSTALL="${build_dir}"
-    curl -fsSL https://bun.sh/install | bash
+    install_bun "${target_version}"
   fi
 
   echo "Installed Bun v$($bun_bin --version)"
 }
 
 function install_dependencies() {
+  echo "---> Installing dependencies"
+
   mkdir -p "${build_dir}/cache"
   $bun_bin install --production --frozen-lockfile --cache-dir="${build_dir}/cache"
 }
 
 function write_metadata() {
+  echo "---> Writing metadata"
+
   cat <<TOML >"${layers_dir}/store.toml"
 [metadata]
 last_stack = "${CNB_STACK_ID}"
@@ -55,6 +64,45 @@ launch = true
 TOML
 
   echo "Done."
+}
+
+function check_for_updated_version() {
+  latest_version="$(get_latest_version)"
+
+  if [ "${installed_version}" != "${latest_version}" ]; then
+    install_bun "${latest_version}"
+  else
+    echo "Using cached Bun install"
+  fi
+}
+
+function install_bun() {
+  target_version="$1"
+  version_options=""
+
+  if [ ! -z "${target_version}" ]; then
+    version_options="-s bun-v${target_version}"
+  fi
+
+  curl -fsSL --retry-connrefused --retry 3 https://bun.sh/install | bash ${version_options}
+}
+
+function get_installed_version() {
+  if [ -f "${bun_bin}" ]; then
+    "${bun_bin}" --version
+  fi
+}
+
+function get_target_version() {
+  if [ ! -z "${BUN_VERSION}" ]; then
+    echo "${BUN_VERSION}"
+  else
+    cat .bun-version 2>/dev/null || echo
+  fi
+}
+
+function get_latest_version() {
+  curl -fsSL --retry-connrefused --retry 3 https://api.github.com/repos/oven-sh/bun/releases | jq -r '.[0] | .tag_name // "v1.2.2" | split("v")[1]'
 }
 
 run
