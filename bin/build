@@ -71,6 +71,15 @@ command = ["bun", "start"]
 default = true
 TOML
 
+  if [ ! -z "$(script "release")" ]; then
+    cat << TOML >> "${layers_dir}/launch.toml"
+[[processes]]
+type = "release"
+command = ["bun", "run", "release"]
+default = false
+TOML
+  fi
+
   echo "Done."
 }
 
@@ -103,10 +112,14 @@ function install_bun() {
 
 function run_script() {
   script_name="$1"
-  script=$(jq -r ".scripts[\"${script_name}\"] // \"\"" package.json)
-  if [ ! -z "${script}" ]; then
+  if [ ! -z "$(script "${script_name}")" ]; then
     $bun_bin run "${script_name}"
   fi
+}
+
+function script() {
+  script_name="$1"
+  jq -r ".scripts[\"${script_name}\"] // \"\"" package.json
 }
 
 function get_installed_version() {

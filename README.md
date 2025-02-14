@@ -8,8 +8,12 @@ In order for your app to start correctly you will need to define either a start
 script in `package.json` or a `Procfile` with a web process
 e.g. (`web: bun src/app.js`).
 
-If you have a build script defined in `package.json` it would be run as part of
+If you have a build script defined in `package.json` it will be run as part of
 the deployment.
+
+If your have a release script defined in `package.json` a release process type
+will be added so that this script is run after each deployment. You can override
+this behavior with a `Procfile`.
 
 ## Installing a specific Bun version
 
