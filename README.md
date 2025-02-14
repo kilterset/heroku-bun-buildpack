@@ -2,6 +2,12 @@
 
 A cloud native buildpack to run bun on Heroku Fir.
 
+## How to use
+
+In order for your app to start correctly you will need to define either a start
+script in `package.json` or a `Procfile` with a web process
+e.g. (`web: bun src/app.js`).
+
 ## Installing a specific Bun version
 
 There are two options for pinning a specific version to install;

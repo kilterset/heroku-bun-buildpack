@@ -56,11 +56,18 @@ function write_metadata() {
 last_stack = "${CNB_STACK_ID}"
 TOML
 
-  cat << TOML > "${build_dir}.toml"
+  cat << TOML > "${layers_dir}/bun.toml"
 [types]
 build = true
 cache = true
 launch = true
+TOML
+
+  cat << TOML > "${layers_dir}/launch.toml"
+[[processes]]
+type = "web"
+command = ["bun", "start"]
+default = true
 TOML
 
   echo "Done."
