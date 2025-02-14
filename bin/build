@@ -15,6 +15,7 @@ function run() {
 
   install
   install_dependencies
+  run_build
   write_metadata
 
   exit 0
@@ -73,6 +74,12 @@ TOML
   echo "Done."
 }
 
+function run_build() {
+  echo "---> Running scripts"
+  run_script "build"
+  echo "Done."
+}
+
 function check_for_updated_version() {
   latest_version="$(get_latest_version)"
 
@@ -92,6 +99,14 @@ function install_bun() {
   fi
 
   curl -fsSL --retry-connrefused --retry 3 https://bun.sh/install | bash ${version_options}
+}
+
+function run_script() {
+  script_name="$1"
+  script=$(jq -r ".scripts[\"${script_name}\"] // \"\"" package.json)
+  if [ ! -z "${script}" ]; then
+    $bun_bin run "${script_name}"
+  fi
 }
 
 function get_installed_version() {

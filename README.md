@@ -8,6 +8,9 @@ In order for your app to start correctly you will need to define either a start
 script in `package.json` or a `Procfile` with a web process
 e.g. (`web: bun src/app.js`).
 
+If you have a build script defined in `package.json` it would be run as part of
+the deployment.
+
 ## Installing a specific Bun version
 
 There are two options for pinning a specific version to install;
