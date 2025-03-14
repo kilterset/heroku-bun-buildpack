@@ -9,7 +9,7 @@ Add the buildpack to your `project.toml`
 ```
 [[io.buildpacks.group]]
   id = "kilterset/bun"
-  uri = "https://github.com/kilterset/heroku-bun-buildpack/releases/download/v0.0.1/buildpack-bun.cnb"
+  uri = "https://github.com/kilterset/heroku-bun-buildpack/releases/download/v0.0.2/buildpack-bun.cnb"
 ```
 
 In order for your app to start correctly you will need to define either a start
