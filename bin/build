@@ -29,7 +29,7 @@ function install() {
   installed_version="$(get_installed_version)"
   target_version="$(get_target_version)"
 
-  if [[ -f "${bun_bin}" && -z "${target_version}" || "${installed_version}" == "${target_version}" ]]; then
+  if [[ -f "${bun_bin}" && ( -z "${target_version}" || "${installed_version}" == "${target_version}" ) ]]; then
     if [ "${installed_version}" == "${target_version}" ]; then
       echo "Using cached Bun install"
     else
